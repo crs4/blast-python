@@ -1,0 +1,10 @@
+include VERSION
+
+include test/all_tests.py
+include test/blastn_results*
+include test/tblastx_results*
+include test/make_expected_results.py
+recursive-include test/sequences *
+
+include src/*.hpp
+include src/*.incl

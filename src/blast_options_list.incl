@@ -1,0 +1,153 @@
+// BEGIN_COPYRIGHT
+// 
+// Copyright (C) 2014 CRS4.
+// 
+// This file is part of blast-python.
+// 
+// blast-python is free software: you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by the Free
+// Software Foundation, either version 3 of the License, or (at your option)
+// any later version.
+// 
+// blast-python is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+// more details.
+// 
+// You should have received a copy of the GNU General Public License along
+// with blast-python.  If not, see <http://www.gnu.org/licenses/>.
+// 
+// END_COPYRIGHT
+
+// Based on ncbi_cxx--Aug_27_2007/include/algo/blast/core/blast_options.h by
+// Tom Madden
+
+command_t commands[] = {
+  define_command(Program,             "program type", ncbi::blast::EProgram, ncbi::blast::eBlastn),
+  define_command(WordThreshold,       
+		 "\
+neighboring word score thresholds; a threshold of zero  means that only query and subject words that match exactly \
+will go into the BLAST lookup table when it is generated",   
+		 double,
+		 BLAST_WORD_THRESHOLD_BLASTN),
+  define_command(WordSize, "length of word to trigger an extension.", int, BLAST_WORDSIZE_NUCL),
+  define_command(MBTemplateLength,"Length of the discontiguous words.", unsigned char, 0),
+  define_command(MBTemplateType,"Type of a discontiguous word template",unsigned char, 0),
+/*
+  define_command(MBMaxPositions,"Max number of positions per word (MegaBlast only); no restriction if 0", int, 0),
+  define_command(FullByteScan,
+		 "subject sequence should be scanned a byte at a time. It applies only to discontiguous megablast.",
+		 bool, false),
+*/
+  define_command(LookupTableType,
+		 "What kind of lookup table to construct? \
+E.g. blastn allows for traditional and megablast style lookup table",
+		 int, 2),
+  define_command(FilterString,"DEPRECATED, use other filtering options", const char*, "T"),
+  define_command(MaskAtHash,"mask query only for lookup table creation",bool, false),
+  define_command(DustFiltering,"is dust algorithm active?, applies only to nucl.-nucl. comparisons",bool, true),
+  define_command(DustFilteringLevel,"Dust filtering level",   int, 20),
+  define_command(DustFilteringWindow,"Dust filtering window", int, 64),
+  define_command(DustFilteringLinker,"Dust filtering linker", int, 1),
+  define_command(SegFiltering,"SEG algorithm, applies only to protein-protein comparisons", bool, false),
+  define_command(SegFilteringWindow,"SEG algorithm filtering window", int, 12),
+  define_command(SegFilteringLocut,"SEG algorithm low cut value",double, 2.2),
+  define_command(SegFilteringHicut,"SEG algorithm high cut value",double, 2.5),
+  define_command(RepeatFiltering,
+		 "status filtering options for organism specific repeats filtering.\
+                  Currently this consist of only the db name but could be expanded \
+                  in the future to include other types of filtering or other options.doc here",bool, false),
+  define_command(RepeatFilteringDB, "RepeatFiltering organism specific database name", const char*, "humrep"),
+  define_command(StrandOption, 
+		 "In blastn: which strand to search: eNa_strand_plus = forward; \
+ eNa_strand_minus = reverse; eNa_strand_both = both", 
+		 ncbi::objects::ENa_strand, 
+		 ncbi::objects::eNa_strand_both),
+  define_command(QueryGeneticCode,"Genetic code to use for translation, [t]blastx only", int, 1),
+  define_command(WindowSize,
+		 "Maximal allowed distance between 2 hits in case 2 hits\
+ are required to trigger the extensiondoc here",
+		 int, 
+		 BLAST_WINDOW_SIZE_NUCL),
+#if NCBI_PRODUCTION_VER < 20070827
+  define_command(UngappedExtension, "Should the ungapped extension be performed?", bool, true),
+#endif
+  define_command(XDropoff, 
+		 "X-dropoff value (in bits) for the ungapped extension", 
+		 double, 
+		 BLAST_UNGAPPED_X_DROPOFF_NUCL),
+  define_command(GapXDropoff,
+		 "X-dropoff value for gapped extension (in bits)",
+		 double, 
+		 BLAST_GAP_X_DROPOFF_NUCL),
+  define_command(GapXDropoffFinal,
+		 "X-dropoff value for the final gapped extension (in bits)doc here",
+		 double, 
+		 BLAST_GAP_X_DROPOFF_FINAL_NUCL),
+/*
+  define_command(GapExtnAlgorithm,
+		 "The algorithm to be used for preliminary gapped extensions.One of eDynProgExt (standard affine gapping), eGreedyExt (Greedy extension (megaBlast)),  eGreedyWithTracebackExt (Greedy extension with Traceback calculated.)",
+		 EBlastPrelimGapExt, 
+		 eDynProgExt),
+*/
+  define_command(GapTracebackAlgorithm,
+		 "The algorithm to be used for final gapped  extensions with traceback. One of     eDynProgTbck (standard affine gapping), eGreedyTbck (Greedy extension (megaBlast)),  eSmithWatermanTbck (Smith-waterman finds optimal score then ALIGN_EX to find aligment)",
+		 EBlastTbackExt,
+		 eDynProgTbck),
+          define_command(CompositionBasedStats,"if TRUE use composition-based stats.", bool, false),
+  define_command(HitlistSize, "Maximal number of database sequences to return results for", int, BLAST_HITLIST_SIZE),
+  define_command(MaxNumHspPerSequence,
+		 "Maximal number of HSPs to save for one database sequence (0 unlimited (?) FIXME)",
+		 int, 
+		 0),
+  define_command(CullingLimit,
+		 "Number of higher-scoring HSPs that must contain  the query range of an HSP before that HSP is declared to be redundant (ignored if zero)",
+		 int,
+		 100),
+  define_command(EvalueThreshold,
+		 "The expect value cut-off threshold for an HSP, or a combined hit if sum statistics is used",
+		 double, 
+		 BLAST_EXPECT_VALUE),
+  define_command(CutoffScore,
+		 "The (raw) score cut-off threshold",
+		 int, 
+		 0),
+  define_command(PercentIdentity, "The percent identity cut-off threshold", double, 0),
+  define_command(SumStatisticsMode, "Force sum statistics to be used to combine HSPsdoc here", bool, false),
+  define_command(LongestIntronLength,
+		 "The longest distance between HSPs allowed for combining via sum statistics with uneven gaps",
+		 int, 
+		 0),
+  define_command(GappedMode,"FIXME",bool, true),
+  define_command(GapTrigger, "Score in bits for starting gapped extension", double, BLAST_GAP_TRIGGER_NUCL),
+  define_command(MatrixName,
+		 "Name of the matrix containing all scores: needed for finding neighboring words",
+		 const char*, 
+		 "BLOSUM62"),
+  define_command(MatchReward,"Reward for a match",int, BLAST_REWARD),
+  define_command(MismatchPenalty,"Penalty for a mismatch", int, BLAST_PENALTY),
+  define_command(GapOpeningCost,"Extra penalty for starting a gap",int, BLAST_GAP_OPEN_NUCL),
+  define_command(GapExtensionCost, "Penalty for each gap residue",int, BLAST_GAP_EXTN_NUCL),
+  define_command(FrameShiftPenalty, "FIXME Penalty for shifting a frame in out-of-frame gapping", int, 32767),
+/*
+  define_command(Decline2AlignPenalty,"FIXME Cost for declining alignment (PSI-BLAST)",int, 32767),
+*/
+  define_command(OutOfFrameMode, "Should out-of-frame gapping be used in a translated search? ", bool, false),
+  define_command(DbLength, "Database length to be used for statistical calculations", Int8, 0),
+  define_command(DbSeqNum, "Number of database sequences to be used for statistical calculations",unsigned int, 0),
+  /*
+    // ZAG -- disabled, it does not handle well the overloading done in <ncbi-tools++/algo/blast/api/blast_options.hpp>
+ define_command(EffectiveSearchSpace,
+		 "Search space to be used for statistical calculationsdoc here", 
+		 Int8, 0),
+ */
+  define_command(DbGeneticCode, "Genetic code to use for translation, tblast[nx] only doc here", int, 0),
+  define_command(PHIPattern, "PHI-BLAST pattern", const char*, ""),
+  define_command(InclusionThreshold, 
+		 "Minimum evalue for inclusion in PSSM calculation. Needed for the conversion of Seq-align \
+ into a multiple sequence alignment and for composition based statistics",
+		 double, PSI_INCLUSION_ETHRESH),
+  define_command(PseudoCount, "Pseudocount constant. Needed for the computing the PSSM residue frequencies",
+		 int, PSI_PSEUDO_COUNT_CONST)
+};
+
